@@ -43,67 +43,63 @@ var dl = DataLogger(logFileName);
 // ******************************
 // Inquirer Section for handling user input
 // ******************************
-function inquire() {
+var prompt = inquirer.createPromptModule();
+var questions = [
+    {
+        type: "list",
+        name: "command",
+        message: "What would you like to do?",
+        choices: ["concert-this", "spotify-this-song", "movie-this", "do-what-it-says"]
+    },
 
+    {
+        // type: "checkbox",
+        type: "list",
+        name: "carryingWhat",
+        message: "What are you carrying in your hands??",
+        choices: ["TV", "Slice of Toast", "Butter Knife"]
+    },
 
-    inquirer.prompt([
-        {
-            type: "list",
-            name: "command",
-            message: "What would you like to do?",
-            choices: ["concert-this", "spotify-this-song", "movie-this", "do-what-it-says"]
-        },
+    {
+        type: "confirm",
+        name: "canLeave",
+        message: "Can you leave now?"
+    },
 
-        {
-            // type: "checkbox",
-            type: "list",
-            name: "carryingWhat",
-            message: "What are you carrying in your hands??",
-            choices: ["TV", "Slice of Toast", "Butter Knife"]
-        },
+    {
+        type: "password",
+        name: "myPassword",
+        message: "Okay fine. You can stay. But only if you say the magic password."
+    }
 
-        {
-            type: "confirm",
-            name: "canLeave",
-            message: "Can you leave now?"
-        },
+];
+prompt(questions).then(function (user) {
+    // dl.log(command.name);
+    console.log(user);
+    // If the user guesses the password...
+    if (user.myPassword === "myHouse") {
 
-        {
-            type: "password",
-            name: "myPassword",
-            message: "Okay fine. You can stay. But only if you say the magic password."
-        }
+        console.log("==============================================");
+        console.log("");
+        console.log("Well a deal's a deal " + user.name);
+        console.log("You can stay as long as you like.");
+        console.log("Doing what = " + user.doingWhat + ".");
+        console.log("Just put down the " + user.carryingWhat + ". It's kind of freaking me out.");
+        console.log("");
+        console.log("==============================================");
+    }
+    // If the user doesn't guess the password...
+    else {
 
-    ]).then(function (user) {
-        // dl.log(command.name);
-        console.log(user);
-        // If the user guesses the password...
-        if (user.myPassword === "myHouse") {
+        console.log("==============================================");
+        console.log("");
+        console.log("Sorry " + user.name);
+        console.log("I'm calling the cops!");
+        console.log("");
+        console.log("==============================================");
 
-            console.log("==============================================");
-            console.log("");
-            console.log("Well a deal's a deal " + user.name);
-            console.log("You can stay as long as you like.");
-            console.log("Doing what = " + user.doingWhat + ".");
-            console.log("Just put down the " + user.carryingWhat + ". It's kind of freaking me out.");
-            console.log("");
-            console.log("==============================================");
-        }
-
-
-        // If the user doesn't guess the password...
-        else {
-
-            console.log("==============================================");
-            console.log("");
-            console.log("Sorry " + user.name);
-            console.log("I'm calling the cops!");
-            console.log("");
-            console.log("==============================================");
-
-        }
-    });
-}
+    }
+});
 
 // ******************************
 // Functions to handle the CLI commands
@@ -199,44 +195,44 @@ function getBandsInTown(artist) {
                     function (response) {
                         // console.log("For " + artist + " Bands in Town returned: " + JSON.stringify(response.data, null, 2));
                     }
-                    ).catch(function (error) {
-                        if (error.response) {
-                            // The request was made and the server responded with a status code
-                            // that falls out of the range of 2xx
-                            console.log(error.response.data);
-                            console.log(error.response.status);
-                            console.log(error.response.headers);
-                        } else if (error.request) {
-                            // The request was made but no response was received
-                            // `error.request` is an object that comes back with details pertaining to the error that occurred.
-                            console.log(error.request);
-                        } else {
-                            // Something happened in setting up the request that triggered an Error
-                            console.log("Error", error.message);
-                        }
-                        console.log(error.config);
-                    });
+                ).catch(function (error) {
+                    if (error.response) {
+                        // The request was made and the server responded with a status code
+                        // that falls out of the range of 2xx
+                        console.log(error.response.data);
+                        console.log(error.response.status);
+                        console.log(error.response.headers);
+                    } else if (error.request) {
+                        // The request was made but no response was received
+                        // `error.request` is an object that comes back with details pertaining to the error that occurred.
+                        console.log(error.request);
+                    } else {
+                        // Something happened in setting up the request that triggered an Error
+                        console.log("Error", error.message);
+                    }
+                    console.log(error.config);
+                });
             } else {
                 console.log(`Sorry. No upcoming events found for ${artist}`);
             }
         }
     ).catch(function (error) {
-                        if (error.response) {
-                            // The request was made and the server responded with a status code
-                            // that falls out of the range of 2xx
-                            console.log(error.response.data);
-                            console.log(error.response.status);
-                            console.log(error.response.headers);
-                        } else if (error.request) {
-                            // The request was made but no response was received
-                            // `error.request` is an object that comes back with details pertaining to the error that occurred.
-                            console.log(error.request);
-                        } else {
-                            // Something happened in setting up the request that triggered an Error
-                            console.log("Error", error.message);
-                        }
-                        console.log(error.config);
-                    });
+        if (error.response) {
+            // The request was made and the server responded with a status code
+            // that falls out of the range of 2xx
+            console.log(error.response.data);
+            console.log(error.response.status);
+            console.log(error.response.headers);
+        } else if (error.request) {
+            // The request was made but no response was received
+            // `error.request` is an object that comes back with details pertaining to the error that occurred.
+            console.log(error.request);
+        } else {
+            // Something happened in setting up the request that triggered an Error
+            console.log("Error", error.message);
+        }
+        console.log(error.config);
+    });
 }
 
 
@@ -259,7 +255,7 @@ function runQuery() {
 }
 
 //getMovie();
-var artist = "celine+dion";
-getBandsInTown(artist);
+// var artist = "celine+dion";
+// getBandsInTown(artist);
 // getSpotify();
 // runQuery();
