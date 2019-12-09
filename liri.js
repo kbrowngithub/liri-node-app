@@ -5,10 +5,8 @@ require("dotenv").config(); // For local environment settings
 var inquirer = require("inquirer"); // For user input
 var axios = require("axios"); // For API queries
 var fs = require("fs");
-
-// Local
+var Spotify = require('node-spotify-api');
 var keys = require("./keys.js");
-
 var spotify = new Spotify(keys.spotify); // Spotify Object
 
 // ******************************
@@ -17,26 +15,26 @@ var spotify = new Spotify(keys.spotify); // Spotify Object
 var logFileName = "log.txt";  // Should pull this from a config
 function DataLogger(logFileName) {
     this.logFileName = logFileName,
-    this.log = function(text) {
-        console.log(`Text = ***${text}***`);
-        text += "\n";
-        console.log(`Text now = ***${text}***`);
-        fs.appendFile(this.logFileName, text, function (err) {
-            if (err) {
-                return console.log(`DataLogger: ${err}`);
-            } else {
-                console.log("Content successfully logged");
-            }
-        });
-    },
-    this.print = function () {
-        fs.readFile(this.logFileName, "utf8", function(error, data) {
-            if (error) {
-              return console.log(error);
-            }
-            console.log(data);
-        });
-    }
+        this.log = function (text) {
+            console.log(`Text = ***${text}***`);
+            text += "\n";
+            console.log(`Text now = ***${text}***`);
+            fs.appendFile(this.logFileName, text, function (err) {
+                if (err) {
+                    return console.log(`DataLogger: ${err}`);
+                } else {
+                    console.log("Content successfully logged");
+                }
+            });
+        },
+        this.print = function () {
+            fs.readFile(this.logFileName, "utf8", function (error, data) {
+                if (error) {
+                    return console.log(error);
+                }
+                console.log(data);
+            });
+        }
 }
 
 var dl = DataLogger(logFileName);
@@ -45,69 +43,67 @@ var dl = DataLogger(logFileName);
 // ******************************
 // Inquirer Section for handling user input
 // ******************************
-inquirer.prompt([
-
-    {
-        type: "input",
-        name: "name",
-        message: "Who are you???"
-    },
-
-    {
-        type: "list",
-        name: "doingWhat",
-        message: "What are you doing in my house??",
-        choices: ["I made you cookies!", "No lie dude. I'm here to rob you.", "Uh. This is my house... Who are YOU???"]
-    },
-
-    {
-        type: "checkbox",
-        name: "carryingWhat",
-        message: "What are you carrying in your hands??",
-        choices: ["TV", "Slice of Toast", "Butter Knife"]
-    },
-
-    {
-        type: "confirm",
-        name: "canLeave",
-        message: "Can you leave now?"
-    },
-
-    {
-        type: "password",
-        name: "myPassword",
-        message: "Okay fine. You can stay. But only if you say the magic password."
-    }
-
-]).then(function (command) {
-    dl.log(command.name);
-
-    // If the user guesses the password...
-    if (user.myPassword === "myHouse") {
-
-        console.log("==============================================");
-        console.log("");
-        console.log("Well a deal's a deal " + user.name);
-        console.log("You can stay as long as you like.");
-        console.log("Just put down the " + user.carryingWhat.join(" and ") + ". It's kind of freaking me out.");
-        console.log("");
-        console.log("==============================================");
-    }
+function inquire() {
 
 
-    // If the user doesn't guess the password...
-    else {
+    inquirer.prompt([
+        {
+            type: "list",
+            name: "command",
+            message: "What would you like to do?",
+            choices: ["concert-this", "spotify-this-song", "movie-this", "do-what-it-says"]
+        },
 
-        console.log("==============================================");
-        console.log("");
-        console.log("Sorry " + user.name);
-        console.log("I'm calling the cops!");
-        console.log("");
-        console.log("==============================================");
+        {
+            // type: "checkbox",
+            type: "list",
+            name: "carryingWhat",
+            message: "What are you carrying in your hands??",
+            choices: ["TV", "Slice of Toast", "Butter Knife"]
+        },
 
-    }
-});
+        {
+            type: "confirm",
+            name: "canLeave",
+            message: "Can you leave now?"
+        },
 
+        {
+            type: "password",
+            name: "myPassword",
+            message: "Okay fine. You can stay. But only if you say the magic password."
+        }
+
+    ]).then(function (user) {
+        // dl.log(command.name);
+        console.log(user);
+        // If the user guesses the password...
+        if (user.myPassword === "myHouse") {
+
+            console.log("==============================================");
+            console.log("");
+            console.log("Well a deal's a deal " + user.name);
+            console.log("You can stay as long as you like.");
+            console.log("Doing what = " + user.doingWhat + ".");
+            console.log("Just put down the " + user.carryingWhat + ". It's kind of freaking me out.");
+            console.log("");
+            console.log("==============================================");
+        }
+
+
+        // If the user doesn't guess the password...
+        else {
+
+            console.log("==============================================");
+            console.log("");
+            console.log("Sorry " + user.name);
+            console.log("I'm calling the cops!");
+            console.log("");
+            console.log("==============================================");
+
+        }
+    });
+}
 
 // ******************************
 // Functions to handle the CLI commands
@@ -122,7 +118,7 @@ inquirer.prompt([
 
 // https://rest.bandsintown.com/artists/celine+dion/events?app_id=codingbootcamp
 function concertThis() {
-    
+
     dl.log(data);
 }
 
@@ -142,8 +138,14 @@ function concertThis() {
 
 // Step Four: On the next screen, scroll down to where you see your client id and client secret. Copy these values down somewhere, you'll need them to use the Spotify API and the node-spotify-api package.
 function spotifyThisSong() {
-    
-    dl.log(data);
+    spotify.search({ type: 'track', query: 'All the Small Things' }, function (err, data) {
+        if (err) {
+            return console.log('Error occurred: ' + err);
+        }
+
+        console.log(data);
+    });
+    // dl.log(data);
 }
 
 // This will output the following information to your terminal/bash window:
@@ -157,7 +159,7 @@ function spotifyThisSong() {
 //   * Actors in the movie.
 // If the user doesn't type a movie in, the program will output data for the movie 'Mr. Nobody.'
 function movieThis() {
-    
+
     dl.log(data);
 }
 
@@ -166,7 +168,7 @@ function movieThis() {
 //  - It should run spotify-this-song for "I Want it That Way," as follows the text in random.txt.
 //  - Edit the text in random.txt to test out the feature for movie-this and concert-this.
 function doWhatItSays() {
-    
+
     dl.log(data);
 }
 
@@ -175,19 +177,79 @@ function doWhatItSays() {
 // ******************************
 
 // axios call to OMDB API
-axios.get("http://www.omdbapi.com/?t=remember+the+titans&y=&plot=short&apikey=trilogy").then(
-    function (response) {
-        console.log("The movie's rating is: " + response.data.imdbRating);
-    }
-);
+function getMovie() {
+    axios.get("http://www.omdbapi.com/?t=remember+the+titans&y=&plot=short&apikey=trilogy").then(
+        function (response) {
+            console.log("OMDB returned: " + JSON.stringify(response.data));
+        }
+    );
+}
 
 // axios call to Bands In Town API
-axios.get("https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp").then(
-    function (response) {
-        console.log("The movie's rating is: " + response.data.imdbRating);
-    }
-);
+function getBandsInTown(artist) {
+    console.log("Artist: " + artist);
+    var currArtist = "https://rest.bandsintown.com/artists/" + artist + "?app_id=codingbootcamp";
+    console.log("URL: " + currArtist);
+    axios.get("https://rest.bandsintown.com/artists/" + artist + "?app_id=codingbootcamp").then(
+        function (response) {
+            // console.log("Bands in Town returned artist: " + JSON.stringify(response.data, null, 2));
 
+            if (response.data !== undefined && response.data.upcoming_event_count !== 0) {
+                axios.get("https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp").then(
+                    function (response) {
+                        // console.log("For " + artist + " Bands in Town returned: " + JSON.stringify(response.data, null, 2));
+                    }
+                    ).catch(function (error) {
+                        if (error.response) {
+                            // The request was made and the server responded with a status code
+                            // that falls out of the range of 2xx
+                            console.log(error.response.data);
+                            console.log(error.response.status);
+                            console.log(error.response.headers);
+                        } else if (error.request) {
+                            // The request was made but no response was received
+                            // `error.request` is an object that comes back with details pertaining to the error that occurred.
+                            console.log(error.request);
+                        } else {
+                            // Something happened in setting up the request that triggered an Error
+                            console.log("Error", error.message);
+                        }
+                        console.log(error.config);
+                    });
+            } else {
+                console.log(`Sorry. No upcoming events found for ${artist}`);
+            }
+        }
+    ).catch(function (error) {
+                        if (error.response) {
+                            // The request was made and the server responded with a status code
+                            // that falls out of the range of 2xx
+                            console.log(error.response.data);
+                            console.log(error.response.status);
+                            console.log(error.response.headers);
+                        } else if (error.request) {
+                            // The request was made but no response was received
+                            // `error.request` is an object that comes back with details pertaining to the error that occurred.
+                            console.log(error.request);
+                        } else {
+                            // Something happened in setting up the request that triggered an Error
+                            console.log("Error", error.message);
+                        }
+                        console.log(error.config);
+                    });
+}
+
+
+// axios call to Spotify API
+function getSpotify() {
+    spotify.search({ type: 'track', query: 'All the Small Things' })
+        .then(function (response) {
+            console.log(response);
+        })
+        .catch(function (err) {
+            console.log(err);
+        });
+}
 
 // ******************************
 // Main function
@@ -196,4 +258,8 @@ function runQuery() {
     console.log(`Processing ${process.argv[2]} ${process.argv[3]} ...`);
 }
 
-runQuery();
+//getMovie();
+var artist = "celine+dion";
+getBandsInTown(artist);
+// getSpotify();
+// runQuery();
