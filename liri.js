@@ -4,11 +4,42 @@
 require("dotenv").config(); // For local environment settings
 var inquirer = require("inquirer"); // For user input
 var axios = require("axios"); // For API queries
+var fs = require("fs");
 
 // Local
 var keys = require("./keys.js");
 
 var spotify = new Spotify(keys.spotify); // Spotify Object
+
+// ******************************
+// Data logger - appends data to log.txt
+// ******************************
+var logFileName = "log.txt";  // Should pull this from a config
+function DataLogger(logFileName) {
+    this.logFileName = logFileName,
+    this.log = function(text) {
+        console.log(`Text = ***${text}***`);
+        text += "\n";
+        console.log(`Text now = ***${text}***`);
+        fs.appendFile(this.logFileName, text, function (err) {
+            if (err) {
+                return console.log(`DataLogger: ${err}`);
+            } else {
+                console.log("Content successfully logged");
+            }
+        });
+    },
+    this.print = function () {
+        fs.readFile(this.logFileName, "utf8", function(error, data) {
+            if (error) {
+              return console.log(error);
+            }
+            console.log(data);
+        });
+    }
+}
+
+var dl = DataLogger(logFileName);
 
 
 // ******************************
@@ -16,64 +47,65 @@ var spotify = new Spotify(keys.spotify); // Spotify Object
 // ******************************
 inquirer.prompt([
 
-  {
-    type: "input",
-    name: "name",
-    message: "Who are you???"
-  },
+    {
+        type: "input",
+        name: "name",
+        message: "Who are you???"
+    },
 
-  {
-    type: "list",
-    name: "doingWhat",
-    message: "What are you doing in my house??",
-    choices: ["I made you cookies!", "No lie dude. I'm here to rob you.", "Uh. This is my house... Who are YOU???"]
-  },
+    {
+        type: "list",
+        name: "doingWhat",
+        message: "What are you doing in my house??",
+        choices: ["I made you cookies!", "No lie dude. I'm here to rob you.", "Uh. This is my house... Who are YOU???"]
+    },
 
-  {
-    type: "checkbox",
-    name: "carryingWhat",
-    message: "What are you carrying in your hands??",
-    choices: ["TV", "Slice of Toast", "Butter Knife"]
-  },
+    {
+        type: "checkbox",
+        name: "carryingWhat",
+        message: "What are you carrying in your hands??",
+        choices: ["TV", "Slice of Toast", "Butter Knife"]
+    },
 
-  {
-    type: "confirm",
-    name: "canLeave",
-    message: "Can you leave now?"
-  },
+    {
+        type: "confirm",
+        name: "canLeave",
+        message: "Can you leave now?"
+    },
 
-  {
-    type: "password",
-    name: "myPassword",
-    message: "Okay fine. You can stay. But only if you say the magic password."
-  }
+    {
+        type: "password",
+        name: "myPassword",
+        message: "Okay fine. You can stay. But only if you say the magic password."
+    }
 
-]).then(function(user) {
+]).then(function (command) {
+    dl.log(command.name);
 
-  // If the user guesses the password...
-  if (user.myPassword === "myHouse") {
+    // If the user guesses the password...
+    if (user.myPassword === "myHouse") {
 
-    console.log("==============================================");
-    console.log("");
-    console.log("Well a deal's a deal " + user.name);
-    console.log("You can stay as long as you like.");
-    console.log("Just put down the " + user.carryingWhat.join(" and ") + ". It's kind of freaking me out.");
-    console.log("");
-    console.log("==============================================");
-  }
+        console.log("==============================================");
+        console.log("");
+        console.log("Well a deal's a deal " + user.name);
+        console.log("You can stay as long as you like.");
+        console.log("Just put down the " + user.carryingWhat.join(" and ") + ". It's kind of freaking me out.");
+        console.log("");
+        console.log("==============================================");
+    }
 
 
-  // If the user doesn't guess the password...
-  else {
+    // If the user doesn't guess the password...
+    else {
 
-    console.log("==============================================");
-    console.log("");
-    console.log("Sorry " + user.name);
-    console.log("I'm calling the cops!");
-    console.log("");
-    console.log("==============================================");
+        console.log("==============================================");
+        console.log("");
+        console.log("Sorry " + user.name);
+        console.log("I'm calling the cops!");
+        console.log("");
+        console.log("==============================================");
 
-  }
+    }
 });
 
 
@@ -90,7 +122,8 @@ inquirer.prompt([
 
 // https://rest.bandsintown.com/artists/celine+dion/events?app_id=codingbootcamp
 function concertThis() {
-
+    
+    dl.log(data);
 }
 
 // This will show the following information about the song in your terminal/bash window
@@ -109,7 +142,8 @@ function concertThis() {
 
 // Step Four: On the next screen, scroll down to where you see your client id and client secret. Copy these values down somewhere, you'll need them to use the Spotify API and the node-spotify-api package.
 function spotifyThisSong() {
-
+    
+    dl.log(data);
 }
 
 // This will output the following information to your terminal/bash window:
@@ -123,7 +157,8 @@ function spotifyThisSong() {
 //   * Actors in the movie.
 // If the user doesn't type a movie in, the program will output data for the movie 'Mr. Nobody.'
 function movieThis() {
-
+    
+    dl.log(data);
 }
 
 // Using the fs Node package, LIRI will take the text inside of random.txt and then use it to call one of
@@ -131,7 +166,8 @@ function movieThis() {
 //  - It should run spotify-this-song for "I Want it That Way," as follows the text in random.txt.
 //  - Edit the text in random.txt to test out the feature for movie-this and concert-this.
 function doWhatItSays() {
-
+    
+    dl.log(data);
 }
 
 // ******************************
@@ -140,32 +176,22 @@ function doWhatItSays() {
 
 // axios call to OMDB API
 axios.get("http://www.omdbapi.com/?t=remember+the+titans&y=&plot=short&apikey=trilogy").then(
-  function(response) {
-    console.log("The movie's rating is: " + response.data.imdbRating);
-  }
+    function (response) {
+        console.log("The movie's rating is: " + response.data.imdbRating);
+    }
 );
 
 // axios call to Bands In Town API
 axios.get("https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp").then(
-  function(response) {
-    console.log("The movie's rating is: " + response.data.imdbRating);
-  }
+    function (response) {
+        console.log("The movie's rating is: " + response.data.imdbRating);
+    }
 );
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+// ******************************
+// Main function
+// ******************************
 function runQuery() {
     console.log(`Processing ${process.argv[2]} ${process.argv[3]} ...`);
 }
