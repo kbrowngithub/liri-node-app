@@ -13,7 +13,8 @@ var spotify = new Spotify(keys.spotify); // Spotify Object
 // Data logger - appends data to log.txt
 // ******************************
 var logFileName = "log.txt";  // Should pull this from a config
-function DataLogger(logFileName) {
+function dataLogger(fileName, text) {
+    text = "Start\n" + text;
     this.logFileName = logFileName,
         this.log = function (text) {
             console.log(`Text = ***${text}***`);
@@ -21,7 +22,7 @@ function DataLogger(logFileName) {
             console.log(`Text now = ***${text}***`);
             fs.appendFile(this.logFileName, text, function (err) {
                 if (err) {
-                    return console.log(`DataLogger: ${err}`);
+                    return console.log(`dataLogger: ${err}`);
                 } else {
                     console.log("Content successfully logged");
                 }
@@ -37,67 +38,42 @@ function DataLogger(logFileName) {
         }
 }
 
-var dl = DataLogger(logFileName);
+// var dl = dataLogger(logFileName);
 
+function URLify(string) {
+    // trims leading/trailing spaces, replaces all spaces (\s) with %20 globally (g) in the string
+    return string.trim().replace(/\s/g, '%20');
+}
 
 // ******************************
 // Inquirer Section for handling user input
 // ******************************
-var prompt = inquirer.createPromptModule();
-var questions = [
+inquirer.prompt([
     {
         type: "list",
         name: "command",
         message: "What would you like to do?",
         choices: ["concert-this", "spotify-this-song", "movie-this", "do-what-it-says"]
-    },
-
-    {
-        // type: "checkbox",
-        type: "list",
-        name: "carryingWhat",
-        message: "What are you carrying in your hands??",
-        choices: ["TV", "Slice of Toast", "Butter Knife"]
-    },
-
-    {
-        type: "confirm",
-        name: "canLeave",
-        message: "Can you leave now?"
-    },
-
-    {
-        type: "password",
-        name: "myPassword",
-        message: "Okay fine. You can stay. But only if you say the magic password."
     }
-
-];
-prompt(questions).then(function (user) {
+]).then(function (answer) {
     // dl.log(command.name);
-    console.log(user);
-    // If the user guesses the password...
-    if (user.myPassword === "myHouse") {
+    console.log(`command = ${answer.command}`);
 
-        console.log("==============================================");
-        console.log("");
-        console.log("Well a deal's a deal " + user.name);
-        console.log("You can stay as long as you like.");
-        console.log("Doing what = " + user.doingWhat + ".");
-        console.log("Just put down the " + user.carryingWhat + ". It's kind of freaking me out.");
-        console.log("");
-        console.log("==============================================");
-    }
-    // If the user doesn't guess the password...
-    else {
-
-        console.log("==============================================");
-        console.log("");
-        console.log("Sorry " + user.name);
-        console.log("I'm calling the cops!");
-        console.log("");
-        console.log("==============================================");
-
+    switch (answer.command) {
+        case "concert-this":
+            concertThis();
+            break;
+        case "spotify-this-song":
+            spotifyThisSong();
+            break;
+        case "movie-this":
+            movieThis();
+            break;
+        case "do-what-it-says":
+            doWhatItSays();
+            break;
+        default:
+            console.log(`Invalid command: ${answer.command}`);
     }
 });
 
@@ -114,8 +90,17 @@ prompt(questions).then(function (user) {
 
 // https://rest.bandsintown.com/artists/celine+dion/events?app_id=codingbootcamp
 function concertThis() {
-
-    dl.log(data);
+    inquirer.prompt([
+        {
+            name: "artist",
+            message: "Which group or artist would you like to search for?"
+        }
+    ]).then(function (answer) {
+        console.log(`concertThis(): Artist = ${answer.artist}`);
+        getBandsInTown(URLify(answer.artist));
+    }).catch(function (err) {
+        console.log(`concertThis(): error: ${err}`);
+    });
 }
 
 // This will show the following information about the song in your terminal/bash window
@@ -133,17 +118,116 @@ function concertThis() {
 // Step Three: Once logged in, navigate to https://developer.spotify.com/my-applications/#!/applications/create to register a new application to be used with the Spotify API. You can fill in whatever you'd like for these fields. When finished, click the "complete" button.
 
 // Step Four: On the next screen, scroll down to where you see your client id and client secret. Copy these values down somewhere, you'll need them to use the Spotify API and the node-spotify-api package.
-function spotifyThisSong() {
-    spotify.search({ type: 'track', query: 'All the Small Things' }, function (err, data) {
-        if (err) {
-            return console.log('Error occurred: ' + err);
+
+
+var spotifyResults = "SpotifyResults.txt";
+function logSpotify(data) {
+    // console.log("Bands in Town returned: " + JSON.stringify(data, null, 2));
+    dataLogger(bandResults, "=================\n");
+
+    data.forEach(element => {
+        var cityState = element.venue.city;
+        if (element.venue.region !== "") {
+            cityState = cityState + ", " + element.venue.region;
         }
 
-        console.log(data);
+        var text = (`Venue: ${element.venue.name} \nCity: ${cityState} \nCountry: ${element.venue.country}`);
+        fs.appendFile(bandResults, text + "\n=================\n", function (err) {
+
+            // If an error was experienced we will log it.
+            if (err) {
+                return console.log(err);
+            }
+
+            // If no error is experienced, we'll log the phrase "Content Added" to our node console.
+            else {
+                console.log("Content Added!");
+            }
+
+        });
     });
-    // dl.log(data);
 }
 
+// This will show the following information about the song in your terminal/bash window
+//  *Artist(s)
+//  *The song's name
+//  *A preview link of the song from Spotify
+//  *The album that the song is from
+// axios call to Spotify API
+
+function spotifyThisSong() {
+    inquirer.prompt([
+        {
+            name: "song",
+            message: "Enter the  name of a song."
+        }
+    ]).then(function (answer) {
+        console.log(`spotifyThisSong(): Song = ${answer.song}`);
+        getSpotify(URLify(answer.song.trim()));
+    }).catch(function (err) {
+        console.log(`spotifyThisSong(): error: ${err}`);
+    });
+}
+
+function getSpotify(query) {
+    console.log(`getSpotify(): query = ${query}`);
+    // spotify.search({ type: 'track', query: query })
+    spotify.search({ type: 'track', query: 'All the Small Things' })
+        .then(function (response) {
+            response.tracks.items.forEach(element => {
+                // console.log(JSON.stringify(response, null, 2));
+                fs.appendFile(spotifyResults, JSON.stringify(element.album.name, null, 2) + "\n", function (err) {
+
+                    // If an error was experienced we will log it.
+                    if (err) {
+                        return console.log(err);
+                    }
+
+                    // If no error is experienced, we'll log the phrase "Content Added" to our node console.
+                    else {
+                        console.log("Content Added!");
+                    }
+
+                });
+            });
+        })
+        .catch(function (err) {
+            console.log(err);
+        });
+}
+
+var omdbResults = "OMDBResults.txt";
+function logOMDB(data) {
+    // console.log("Bands in Town returned: " + JSON.stringify(data, null, 2));
+    var rT = "Rotten Tomatoes";
+    data.Ratings.forEach(element => {
+        if(element.Source === rT) {
+            rT = rT + ": " + element.Value;
+        }
+        // for (let [key, value] of Object.entries(element)) {
+        //     console.log(`Key/Value pairs: ${key}: ${value}`);
+        //     console.log(key + ": " + value);
+            // if (key === "Source" && value === "Rotten Tomatoes") {
+            //     rT = key + ": " + value;
+            // }
+        // }
+    });
+
+    var text = (`Title: ${data.Title} \nYear: ${data.Year} \nIMDB Rating: ${data.imdbRating} \n${rT} \nCountry: ${data.Country} \nLanguage: ${data.Language} \nPlot: ${data.Plot} \nActors: ${data.Actors}`);
+    fs.appendFile(omdbResults, text + "\n=================\n", function (err) {
+
+        // If an error was experienced we will log it.
+        if (err) {
+            return console.log(err);
+        }
+
+        // If no error is experienced, we'll log the phrase "Content Added" to our node console.
+        else {
+            console.log("Content Added!");
+        }
+
+    });
+}
 // This will output the following information to your terminal/bash window:
 //   * Title of the movie.
 //   * Year the movie came out.
@@ -155,8 +239,17 @@ function spotifyThisSong() {
 //   * Actors in the movie.
 // If the user doesn't type a movie in, the program will output data for the movie 'Mr. Nobody.'
 function movieThis() {
-
-    dl.log(data);
+    inquirer.prompt([
+        {
+            name: "movie",
+            message: "Enter the name of a movie."
+        }
+    ]).then(function (answer) {
+        console.log(`movieThis(): Movie = ${answer.movie}`);
+        getMovie(URLify(answer.movie.trim()));
+    }).catch(function (err) {
+        console.log(`spotifyThisSong(): error: ${err}`);
+    });
 }
 
 // Using the fs Node package, LIRI will take the text inside of random.txt and then use it to call one of
@@ -165,7 +258,7 @@ function movieThis() {
 //  - Edit the text in random.txt to test out the feature for movie-this and concert-this.
 function doWhatItSays() {
 
-    dl.log(data);
+    // dl.log(data);
 }
 
 // ******************************
@@ -173,27 +266,59 @@ function doWhatItSays() {
 // ******************************
 
 // axios call to OMDB API
-function getMovie() {
+function getMovie(movieName) {
+    console.log(`getMovie(): movieName = ${movieName}`);
+    // axios.get("http://www.omdbapi.com/?t="+movieName+"&y=&plot=short&apikey=trilogy").then(
     axios.get("http://www.omdbapi.com/?t=remember+the+titans&y=&plot=short&apikey=trilogy").then(
         function (response) {
-            console.log("OMDB returned: " + JSON.stringify(response.data));
+            console.log("OMDB returned: " + JSON.stringify(response.data, null, 2));
+            logOMDB(response.data);
         }
     );
 }
 
+var bandResults = "BandResults.txt";
+function logInfo(data) {
+    // console.log("Bands in Town returned: " + JSON.stringify(data, null, 2));
+    dataLogger(bandResults, "=================\n");
+
+    data.forEach(element => {
+        var cityState = element.venue.city;
+        if (element.venue.region !== "") {
+            cityState = cityState + ", " + element.venue.region;
+        }
+
+        var text = (`Venue: ${element.venue.name} \nCity: ${cityState} \nCountry: ${element.venue.country}`);
+        fs.appendFile(bandResults, text + "\n=================\n", function (err) {
+
+            // If an error was experienced we will log it.
+            if (err) {
+                return console.log(err);
+            }
+
+            // If no error is experienced, we'll log the phrase "Content Added" to our node console.
+            else {
+                console.log("Content Added!");
+            }
+
+        });
+    });
+}
+
 // axios call to Bands In Town API
 function getBandsInTown(artist) {
-    console.log("Artist: " + artist);
-    var currArtist = "https://rest.bandsintown.com/artists/" + artist + "?app_id=codingbootcamp";
-    console.log("URL: " + currArtist);
-    axios.get("https://rest.bandsintown.com/artists/" + artist + "?app_id=codingbootcamp").then(
+    console.log(`getBandsInTown(): Artist = ${artist}`);
+    var url = "https://rest.bandsintown.com/artists/" + artist + "?app_id=codingbootcamp";
+    console.log(`getBandsInTown(): URL: ${url}`);
+    axios.get(url).then(
         function (response) {
-            // console.log("Bands in Town returned artist: " + JSON.stringify(response.data, null, 2));
+            console.log("Bands in Town returned artist: " + JSON.stringify(response.data, null, 2));
 
             if (response.data !== undefined && response.data.upcoming_event_count !== 0) {
                 axios.get("https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp").then(
                     function (response) {
                         // console.log("For " + artist + " Bands in Town returned: " + JSON.stringify(response.data, null, 2));
+                        logInfo(response.data);
                     }
                 ).catch(function (error) {
                     if (error.response) {
@@ -235,23 +360,10 @@ function getBandsInTown(artist) {
     });
 }
 
-
-// axios call to Spotify API
-function getSpotify() {
-    spotify.search({ type: 'track', query: 'All the Small Things' })
-        .then(function (response) {
-            console.log(response);
-        })
-        .catch(function (err) {
-            console.log(err);
-        });
-}
-
 // ******************************
 // Main function
 // ******************************
 function runQuery() {
-    console.log(`Processing ${process.argv[2]} ${process.argv[3]} ...`);
 }
 
 //getMovie();
@@ -259,3 +371,4 @@ function runQuery() {
 // getBandsInTown(artist);
 // getSpotify();
 // runQuery();
+
