@@ -112,23 +112,26 @@ https://drive.google.com/file/d/1zrmQPSNTQCqva5Ja8REkh4PDA8xOcYSl/view
 
 ### Command Options:
 
-1.) concert-this <artist/band name here>
 ```
+1.) concert-this <artist/band name here>
+
 Output:
     - Name of the venue
     - Venue location
     - Date of the Event ("MM/DD/YYYY")
 ```
 
-2.) concert-this <no params>
 ```
+2.) concert-this <no params>
+
 Output:
     - Informational Message
         "You must enter an artist name (e.g. Celine Dion)"
 ```
 
-3.) spotify-this <song name here>
 ```
+3.) spotify-this <song name here>
+
 Output:
     - Artist(s)
     - The song's name
@@ -136,8 +139,9 @@ Output:
     - The album that the song is from
 ```
 
-4.) spotify-this <no params> (will default to "The Sign")
 ```
+4.) spotify-this <no params> (will default to "The Sign")
+
 Output :
     - Artist(s)
     - The song's name
@@ -145,8 +149,9 @@ Output :
     - The album that the song is from
 ```
 
+```
 5.) movie-this <movie name here>
-```
+
 Output :
     - Title of the movie.
     - Year the movie came out.
@@ -158,8 +163,9 @@ Output :
     - Actors in the movie.
 ```
 
+```
 6.) movie-this <no params> (will default to "Mr. Nobody")
-```
+
 Output :
     - Title of the movie.
     - Year the movie came out.
@@ -172,8 +178,9 @@ Output :
 
 ```
 
-7.) do-what-it-says
 ```
+7.) do-what-it-says
+
 Output :
     - randomly selects one of the first three commands each time executed
 ```
