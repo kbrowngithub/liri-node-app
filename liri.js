@@ -22,7 +22,7 @@ var spotifyResults = "log.txt";
 var omdbResults = "log.txt";
 
 // ******************************
-// logData() - appends data to log file
+// logData() - appends timestamp and data to log file
 // ******************************
 function logData(fileName, text) {
     var timeStamp = moment().format("MMM Do YYYY, h:mm:ss a");
