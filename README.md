@@ -24,7 +24,7 @@ and "OMDB" for movies and then parse and display the data back to the user.
                 - (if no artist is given display message to the user with an example)
                 - BandsInTown lookup
                     - Parse, Log, and Display data
-                    -exit
+                    - exit
 
         - spotify-this
             - prompt for song
@@ -111,8 +111,6 @@ https://drive.google.com/file/d/1zrmQPSNTQCqva5Ja8REkh4PDA8xOcYSl/view
 
 
 ### Command Options:
-
-```
 
 1.) concert-this <artist/band name here>
 ```
