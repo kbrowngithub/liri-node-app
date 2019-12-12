@@ -78,6 +78,7 @@ function concertThis() {
 // axios call to Bands In Town API
 // ******************************
 function getBandsInTown(artist) {
+    if(artist === ""){return console.log("You must enter an artist name (e.g. Celine Dion)");}
     artist = artist.replace(/"/g, "");
     var url = "https://rest.bandsintown.com/artists/" + URLify(artist) + "?app_id=codingbootcamp";
     axios.get(url).then(
@@ -300,21 +301,21 @@ function doWhatItSays() {
                 command = item[0].trim();
                 param = item[1];
                 console.log(`action: ${command}, param: ${param}`);
-                logData("log.txt", `"****do-what-it-says returned: ${command} ${param}****\n`);
+                logData(spotifyResults, `"****do-what-it-says returned: ${command} ${param}****\n`);
                 getSpotify(param);
                 break;
             case 2:
                 command = item[2].trim();
                 param = item[3];
                 console.log(`action: ${command}, param: ${param}`);
-                logData("log.txt", `"****do-what-it-says returned: ${command} ${param}****\n`);
+                logData(bandResults, `"****do-what-it-says returned: ${command} ${param}****\n`);
                 getBandsInTown(param);
                 break;
             case 3:
                 command = item[4].trim();
                 param = item[5];
                 console.log(`action: ${command}, param: ${param}`);
-                logData("log.txt", `"****do-what-it-says returned: ${command} ${param}****\n`);
+                logData(omdbResults, `"****do-what-it-says returned: ${command} ${param}****\n`);
                 getMovie(URLify(param));
                 break;
             default:
