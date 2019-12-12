@@ -24,24 +24,25 @@ and "OMDB" for movies and then parse and display the data back to the user.
                 - (if no artist is given display message to the user with an example)
                 - BandsInTown lookup
                     - Parse, Log, and Display data
+                    -exit
 
         - spotify-this
             - prompt for song
                 - (if no song is given default to "The Sign")
                 - Spotify lookup
                     - Parse, Log, and Display data
+                    - exit
 
         - movie-this
             - prompt for movie
                 - (if no movie is given default to "Mr. Nobody")
                 - OMDB lookup
                     - Parse, Log, and Display data
+                    - exit
 
         - do-what-it-says (randomly selects one of the 3 commands listed in random.txt)
             - get a command from random.txt (command will be one of the 3 listed above)
-                - run the command in the Liri app
-
-    end
+                - run the command in the Liri app (go-to one of the 3 commands above)
 
 ```
 
@@ -84,6 +85,8 @@ Node Dependencies:
 
 # How to run the app
 
+### Setup
+
 ```
 You'll need a Spotify API key. You can sign up here:
 https://developer.spotify.com/my-applications/#!/login
@@ -103,30 +106,81 @@ You'll then be prompted for what to do and any associated search parameters.
 ```
 
 ### Demo Recording Link: 
-```
+
 https://drive.google.com/file/d/1zrmQPSNTQCqva5Ja8REkh4PDA8xOcYSl/view
 
-```
 
 ### Command Options:
 
 ```
 
 1.) concert-this <artist/band name here>
+```
+Output:
+    - Name of the venue
+    - Venue location
+    - Date of the Event ("MM/DD/YYYY")
+```
 
-2.) concert-this <no params> (will give an informational example to the user)
+2.) concert-this <no params>
+```
+Output:
+    - Informational Message
+        "You must enter an artist name (e.g. Celine Dion)"
+```
 
 3.) spotify-this <song name here>
+```
+Output:
+    - Artist(s)
+    - The song's name
+    - A preview link of the song from Spotify
+    - The album that the song is from
+```
 
 4.) spotify-this <no params> (will default to "The Sign")
+```
+Output :
+    - Artist(s)
+    - The song's name
+    - A preview link of the song from Spotify
+    - The album that the song is from
+```
 
 5.) movie-this <movie name here>
+```
+Output :
+    - Title of the movie.
+    - Year the movie came out.
+    - IMDB Rating of the movie.
+    - Rotten Tomatoes Rating of the movie.
+    - Country where the movie was produced.
+    - Language of the movie.
+    - Plot of the movie.
+    - Actors in the movie.
+```
 
 6.) movie-this <no params> (will default to "Mr. Nobody")
-
-7.) do-what-it-says (randomly selects one of the first three commands each time executed)
+```
+Output :
+    - Title of the movie.
+    - Year the movie came out.
+    - IMDB Rating of the movie.
+    - Rotten Tomatoes Rating of the movie.
+    - Country where the movie was produced.
+    - Language of the movie.
+    - Plot of the movie.
+    - Actors in the movie.
 
 ```
+
+7.) do-what-it-says
+```
+Output :
+    - randomly selects one of the first three commands each time executed
+```
+
+
 
 
 
