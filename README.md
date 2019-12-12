@@ -88,11 +88,13 @@ Node Dependencies:
 ### Setup
 
 ```
-You'll need a Spotify API key. You can sign up here:
+1.) clone liri-node-app to your computer (git@github.com:kbrowngithub/liri-node-app.git)
+
+2.) You'll need a Spotify API key. You can sign up here:
 https://developer.spotify.com/my-applications/#!/login
 Then follow the directions to create a new app.
 
-Once you have the Spotify key create a .env file containing the following:
+3.) Once you have the Spotify key create a .env file containing the following:
         
         # Spotify API keys
         SPOTIFY_ID=your-spotify-id-here
@@ -100,8 +102,15 @@ Once you have the Spotify key create a .env file containing the following:
 
 Save it in the root directory of your liri-node-app instance.
 
-To run liri in a terminal window, in the root directory of the liri app type:  node liri.js
-You'll then be prompted for what to do and any associated search parameters.
+4.) From a terminal cd into the root directory of your liri-node-app instance and run
+the command:  npm install
+This will install the required node packages.
+```
+
+### Execution
+
+```
+To execute the liri-node-app, from terminal window cd into the root directory of the liri-node-app and type:  node liri.js
 
 ```
 
