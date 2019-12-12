@@ -112,7 +112,9 @@ This will install the required node packages.
 ### Execution
 
 ```
-To execute the liri-node-app, from terminal window cd into the root directory of the liri-node-app and type:  node liri.js
+To execute the liri-node-app, from a terminal window cd into 
+the root directory of the liri-node-app and type:  
+    node liri.js
 
 ```
 
