@@ -1,16 +1,22 @@
 # liri-node-app
-
-# Designed and Developed by: Kevin Brown
-
-# Project Overview:
 ```
-LIRI is a data search tool. It's like a simple version of iPhone's SIRI. However, while SIRI is a Speech Interpretation and Recognition Interface, LIRI is a Language Interpretation and Recognition Interface that takes in parameters from a command line and returns data related to music and movie entertainment based on the parameters given. LIRI will search "Spotify" for songs, "Bands in Town" for concerts, and "OMDB" for movies and then parse and display the data back to the user.
-
+Designed and Developed by: Kevin Brown
 ```
 
-# Organizational Overview:
+# Project Overview
+```
+LIRI is a data search tool. It's like a simple version of iPhone's SIRI. 
+However, while SIRI is a Speech Interpretation and Recognition Interface, LIRI is a 
+Language Interpretation and Recognition Interface that takes in parameters from a 
+command line and returns data related to music and movie entertainment based on the 
+parameters given. LIRI will search "Spotify" for songs, "Bands in Town" for concerts, 
+and "OMDB" for movies and then parse and display the data back to the user.
 
-### Process Flow:
+```
+
+# Organizational Overview
+
+### Process Flow
 ```
     main()
         - concert-this
@@ -39,7 +45,7 @@ LIRI is a data search tool. It's like a simple version of iPhone's SIRI. However
 
 ```
 
-# Technologies Used in this application:
+### Technologies Used in this application
 
 ```
 Technology Requirements:
@@ -76,7 +82,7 @@ Node Dependencies:
 
 ```
 
-# How to run the app:
+# How to run the app
 
 ```
 You'll need a Spotify API key. You can sign up here:
@@ -96,51 +102,29 @@ You'll then be prompted for what to do and any associated search parameters.
 
 ```
 
- # Screen Shots
-
+### Demo Recording Link: 
 ```
- 
- Main Menu
-
- ```
- <img width="977" alt="Start Screen Shot" src="assets/images/StartScreen.PNG">
- 
- ```
- 
- Data Display
-
- ```
-
- <img width="977" alt="Start Screen Shot" src="assets/images/PlayScreen.PNG">
- 
- ```
- 
- ```
-
-### Demo Recording Link: https://drive.google.com/file/d/1zrmQPSNTQCqva5Ja8REkh4PDA8xOcYSl/view
-
-# Test Cases:
+https://drive.google.com/file/d/1zrmQPSNTQCqva5Ja8REkh4PDA8xOcYSl/view
 
 ```
 
-1.) concert-this <params>
+### Command Options:
 
-2.) concert-this <no params>
+```
 
-3.) spotify-this <params>
+1.) concert-this <artist/band name here>
 
-4.) spotify-this <no params>
+2.) concert-this <no params> (will give an informational example to the user)
 
-5.) movie-this <params>
+3.) spotify-this <song name here>
 
-6.) movie-this <no params>
+4.) spotify-this <no params> (will default to "The Sign")
 
-7.) do-what-it-says (randomly select one of the first three commands each time executed)
+5.) movie-this <movie name here>
 
-8.) do-what-it-says (randomly select one of the first three commands each time executed)
+6.) movie-this <no params> (will default to "Mr. Nobody")
 
-9.) do-what-it-says (randomly select one of the first three commands each time executed)
-
+7.) do-what-it-says (randomly selects one of the first three commands each time executed)
 
 ```
 
