@@ -17,9 +17,9 @@ var sepStr = "\n===================";
 
 // Log files. Currently set to the same file name but can be used to create individual logging
 // for each individual API
-var bandResults = "log.txt";
-var spotifyResults = "log.txt";
-var omdbResults = "log.txt";
+var bandResults = "data.log";
+var spotifyResults = "data.log";
+var omdbResults = "data.log";
 
 // ******************************
 // logData() - appends timestamp and data to log file
