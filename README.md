@@ -95,7 +95,8 @@ https://developer.spotify.com/my-applications/#!/login
 Then follow the directions to create a new app.
 
 3.) Once you have the Spotify key create a .env file containing the following 
-    (replacing "your-spotify-id-here" with the spotify id you just received and "your-spotify-secret-here" with the secret that you just received):
+    (replacing "your-spotify-id-here" with the spotify id you just received and 
+    "your-spotify-secret-here" with the secret that you just received):
         
         # Spotify API keys
         SPOTIFY_ID=your-spotify-id-here
