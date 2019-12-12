@@ -8,15 +8,18 @@ var axios = require("axios"); // For API queries
 var fs = require("fs");
 var Spotify = require('node-spotify-api');
 var keys = require("./keys.js");
-var spotify = new Spotify(keys.spotify); // Spotify Object
 
+// Global variables
+var spotify = new Spotify(keys.spotify); // Spotify Object
 var command;
 var param;
 var sepStr = "\n===================";
+
+// Log files. Currently set to the same file name but can be used to create individual logging
+// for each individual API
 var bandResults = "log.txt";
 var spotifyResults = "log.txt";
 var omdbResults = "log.txt";
-
 
 // ******************************
 // logData() - appends data to log file
@@ -34,34 +37,29 @@ function logData(fileName, text) {
 }
 
 // ******************************
-// displayData() - appends data to log file
+// displayData() - appends data to the log file
 // ******************************
 function displayData(text) {
     console.log("\n===================");
     console.log(`${text}${sepStr}`);
 }
 
+// ******************************
+// Utility function that replaces spaces with %20 in a string
+// ******************************
 function URLify(string) {
     // trims leading/trailing spaces, replaces all spaces (\s) with %20 globally (g) in the string
     return string.trim().replace(/\s/g, '%20');
 }
 
 // ******************************
-// Inquirer Section for handling user input
-// ******************************
-
-// ******************************
-// Functions to handle the CLI commands
-// ******************************
-
-// This will search the Bands in Town Artist Events API ("https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp") for an artist and render the following information about each event to the terminal:
+// This searches the Bands in Town Artist Events API 
+// ("https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp") for an artist and 
+// renders the following information about each event to the terminal:
 //  *Name of the venue
 //  *Venue location
-//  *Date of the Event (use moment to format this as "MM/DD/YYYY")
-
-// Important: There is no need to sign up for a Bands in Town api_id key. Use the codingbootcamp as your app_id. For example, the URL used to search for "Celine Dion" would look like the following:
-
-// https://rest.bandsintown.com/artists/celine+dion/events?app_id=codingbootcamp
+//  *Date of the Event (using moment to format this as "MM/DD/YYYY")
+// ******************************
 function concertThis() {
     inquirer.prompt([
         {
@@ -76,7 +74,9 @@ function concertThis() {
     });
 }
 
+// ******************************
 // axios call to Bands In Town API
+// ******************************
 function getBandsInTown(artist) {
     artist = artist.replace(/"/g, "");
     var url = "https://rest.bandsintown.com/artists/" + URLify(artist) + "?app_id=codingbootcamp";
@@ -127,6 +127,9 @@ function getBandsInTown(artist) {
     });
 }
 
+// ******************************
+// Parses the Json returned from BandsInTown API
+// ******************************
 function parseBandData(data) {
     data.forEach(element => {
         var time = moment(element.datetime).format("MM/DD/YYYY");
@@ -141,31 +144,24 @@ function parseBandData(data) {
     });
 }
 
-// This will show the following information about the song in your terminal/bash window
+// The Spotify API requires a sign up as a developer to generate the necessary credentials. 
+// You can follow these steps in order to generate a client id and client secret:
+//  * Step One: Visit https://developer.spotify.com/my-applications/#!/
+//  * Step Two: Either login to your existing Spotify account or create a new one (a free account is fine) and log in.
+//  * Step Three: Once logged in, navigate to https://developer.spotify.com/my-applications/#!/applications/create to register 
+//     a new application to be used with the Spotify API. You can fill in whatever you'd like for these fields. 
+//     When finished, click the "complete" button.
+//  * Step Four: On the next screen, scroll down to where you see your client id and client secret. These need to be stored in
+//     the .env file.
+
+// ******************************
+// This will show the following information about the song in the terminal/bash window:
 //  *Artist(s)
 //  *The song's name
 //  *A preview link of the song from Spotify
 //  *The album that the song is from
-
-// If no song is provided then your program will default to "The Sign" by Ace of Base.
-// You will utilize the node-spotify-api package in order to retrieve song information from the Spotify API.
-// The Spotify API requires you sign up as a developer to generate the necessary credentials. You can follow these steps in order to generate a client id and client secret:
-// Step One: Visit https://developer.spotify.com/my-applications/#!/
-
-// Step Two: Either login to your existing Spotify account or create a new one (a free account is fine) and log in.
-// Step Three: Once logged in, navigate to https://developer.spotify.com/my-applications/#!/applications/create to register a new application to be used with the Spotify API. You can fill in whatever you'd like for these fields. When finished, click the "complete" button.
-
-// Step Four: On the next screen, scroll down to where you see your client id and client secret. Copy these values down somewhere, you'll need them to use the Spotify API and the node-spotify-api package.
-
-
-
-// This will show the following information about the song in your terminal/bash window
-//  *Artist(s)
-//  *The song's name
-//  *A preview link of the song from Spotify
-//  *The album that the song is from
-// axios call to Spotify API
-
+//  *If no song is provided then the program defaults to "The Sign" by Ace of Base.
+// ******************************
 function spotifyThisSong() {
     inquirer.prompt([
         {
@@ -185,8 +181,10 @@ function spotifyThisSong() {
     });
 }
 
+// ******************************
+// Uses the node-spotify-api package in order to retrieve song information from the Spotify API.
+// ******************************
 function getSpotify(query) {
-    console.log("After: " + query);
     spotify.search({ type: 'track', query: query })
         .then(function (response) {
             parseSpotifyData(response.tracks.items);
@@ -196,30 +194,22 @@ function getSpotify(query) {
         });
 }
 
+// ******************************
+// Parses the Spotify Json returned from the spotify search method
+// ******************************
 function parseSpotifyData(data) {
-    // console.log("Spotify returned: " + JSON.stringify(data, null, 2));
     var logText = "";
     var empty = true;
-    // if (data !== []) {
         data.forEach(element => {
             var text = "";
-            // i++;
-            // console.log("param = " + param);
-            // console.log("element.name = " + "\""+element.name+"\"");
             if ("\"" + element.name.toLowerCase() + "\"" === param.toLowerCase()) {
                 empty = false;
                 text += "Artists:";
                 element.artists.forEach(item => {
-                    // console.log(item.name);
                     text += `\n  ${item.name}`;
                 });
-                // console.log("Song Name: " + element.name);
                 text += `\nSong Name: ${element.name}`;
-
-                // console.log("Preview URL: " + element.preview_url);
                 text += `\nPreview URL: ${element.preview_url}`;
-
-                // console.log("Album Name: " + element.album.name);
                 text += `\nAlbum Name: ${element.album.name}`;
 
                 displayData(text);
@@ -233,6 +223,7 @@ function parseSpotifyData(data) {
     logData(spotifyResults, logText);
 }
 
+// ******************************
 // This will output the following information to your terminal/bash window:
 //   * Title of the movie.
 //   * Year the movie came out.
@@ -242,7 +233,8 @@ function parseSpotifyData(data) {
 //   * Language of the movie.
 //   * Plot of the movie.
 //   * Actors in the movie.
-// If the user doesn't type a movie in, the program will output data for the movie 'Mr. Nobody.'
+//   * If the user doesn't type a movie in, the program outputs data for the movie 'Mr. Nobody.'
+// ******************************
 function movieThis() {
     inquirer.prompt([
         {
@@ -258,9 +250,11 @@ function movieThis() {
     });
 }
 
+// ******************************
 // axios call to OMDB API
+// ******************************
 function getMovie(movieName) {
-    // console.log(`getMovie(): movieName = ${movieName}`);
+    if(movieName === ""){movieName = "Mr Nobody";}
     axios.get("http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy").then(
         function (response) {
             // console.log("OMDB returned: " + JSON.stringify(response.data, null, 2));
@@ -269,6 +263,9 @@ function getMovie(movieName) {
     );
 }
 
+// ******************************
+// Parse out the required data from the Json returned from OMDB
+// ******************************
 function parseOMDBData(data) {
     // console.log("OMDB: " + JSON.stringify(data, null, 2));
     if (data.Response !== "False") {
@@ -287,16 +284,15 @@ function parseOMDBData(data) {
     }
 }
 
-// Using the fs Node package, LIRI will take the text inside of random.txt and then use it to call one of
-// LIRI's commands.
-//  - It should run spotify-this-song for "I Want it That Way," as follows the text in random.txt.
-//  - Edit the text in random.txt to test out the feature for movie-this and concert-this.
+// ******************************
+// Using the fs Node package, LIRI selects one of the 3 commands and associated parameters listed inside 
+// of random.txt and calls the application with it.
+// ******************************
 function doWhatItSays() {
     // Read random.txt
     fs.readFile("random.txt", "utf8", function (err, data) {
         var item = data.split(',');
         var  randomCommand = Math.floor(Math.random()*3)+1;
-        // console.log(`randomCommand = ${randomCommand}`);
 
         // Switch on the returned commands
         switch (randomCommand) {
@@ -328,7 +324,7 @@ function doWhatItSays() {
 }
 
 // ******************************
-// Main function - Collects initial command from user and takes appropriate action
+// Main function - Collects initial command and parameters from user and takes appropriate action
 // ******************************
 function main() {
     inquirer.prompt([
@@ -362,5 +358,8 @@ function main() {
     });
 }
 
+// ******************************
+// Run the application
+// ******************************
 main();
 
